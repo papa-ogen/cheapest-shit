@@ -2,15 +2,8 @@
 
 ## How To
 
-`pyenv virtualenv 3.1.1 cheapest-shit
-pyenv local cheapest-shit`
-
-Next
-
-`pip install -r requirements.txt -r requirements-dev.txt`
-
-Run
-`Make all`
+- `Make install`
+- `Make all`
 
 ## Update Dependencies with pip-tools
 
