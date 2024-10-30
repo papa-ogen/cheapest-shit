@@ -34,4 +34,5 @@ update:
 	pip-compile requirements-dev.in
 	pip install -r requirements.txt -r requirements-dev.txt
 
-
+test:
+	pytest

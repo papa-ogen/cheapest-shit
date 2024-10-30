@@ -21,7 +21,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root() -> dict[str, str]:
-    return {"Hello": "World"}
+    return {"app_name": settings.APP_NAME}
 
 app.include_router(search_routes.router)
 
