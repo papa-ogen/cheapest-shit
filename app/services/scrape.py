@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
+from app.models.product import Product
+
 
 # Provider
 sort_by = 'PRICE_ASCENDING'
@@ -11,25 +13,44 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
 }
 
+def parse_int(s: str) -> int:
+    num_str = ''
+    for char in s:
+        if char.isdigit():  # Check if the character is a digit
+            num_str += char  # Add it to the result string
+        else:
+            break  # Stop at the first invalid character
+    return int(num_str) if num_str else None  # Convert to int or return None if empty
+
+
 def get_product_list(product_markup: BeautifulSoup, tag: str, options: object) -> list[BeautifulSoup]:
     products = product_markup.find_all(tag, options)
     return products
 
-def scrape_xxl():
-    # Send a GET request to the URL
+def create_product(product_markup: BeautifulSoup) -> Product:
+    brand_span = product_markup.find('span', {'data-testid': 'new-product-brand'})
+    name_span = brand_span.find_next_sibling('span')
+
+    product = Product(
+        name=name_span.text,
+        price=parse_int(product_markup.find('span', {'data-testid': 'current-price'}).text),
+        brand=brand_span.text,
+    )
+    return product
+
+def scrape_xxl() -> list[Product]:
     response = requests.get(url, headers=headers)
 
-    # Check if the request was successful
     if response.status_code == 200:
         html = BeautifulSoup(response.text, 'html.parser')
 
-        # Find elements by HTML data-testid attribute
-        products = get_product_list(html, 'div', {'data-testid': 'list-product'})
+        product_list = get_product_list(html, 'div', {'data-testid': 'list-product'})
 
-        print("Found", len(products))
+        products: list[Product] = []
+        for product in product_list:
+            products.append(create_product(product))
 
-        # Print each title
-        for product in products:
-            print(product.get_text(strip=True))
+        return products
+            
     else:
         print("Failed to retrieve the page. Status code:", response.status_code)

@@ -5,6 +5,9 @@ class Product(BaseModel):
     name: str
     price: float
     description: Optional[str] = None
+    brand: Optional[str] = None
+    url: Optional[str] = None
+    image: Optional[str] = None
 
     class Config:
         schema_extra = {

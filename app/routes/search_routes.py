@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.services.product_service import ProductService
 from app.models.product import Product
-from app.services.scrape import scrape_xxl
 
 router = APIRouter()
 
@@ -9,8 +8,6 @@ router = APIRouter()
 def get_products(query: str = None) -> list[Product]:
     if not query:
         raise HTTPException(status_code=400, detail="Query parameter is required")
-    
-    scrape_xxl()
     
     return ProductService.get_all_products()
 
