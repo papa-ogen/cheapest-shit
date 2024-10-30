@@ -14,7 +14,7 @@ NC = \033[0m  # No Color
 .PHONY: all install update npm-install
 
 all:
-	uvicorn main:app --reload & cd frontend && npm run dev
+	uvicorn app.main:app --reload & cd frontend && npm run dev
 
 install: 
 	@echo "$(YELLOW)Creating virtual environment...$(NC)"
@@ -29,7 +29,7 @@ npm-install:
 	cd frontend && npm install
 
 update:
-	@echo "$(RED)Updating dependencies...$(NC)"
+	@echo "$(YELLOW)Updating dependencies...$(NC)"
 	pip-compile requirements.in
 	pip-compile requirements-dev.in
 	pip install -r requirements.txt -r requirements-dev.txt
