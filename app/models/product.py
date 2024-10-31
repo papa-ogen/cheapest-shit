@@ -1,6 +1,6 @@
 from typing import Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Product(BaseModel):
@@ -12,11 +12,12 @@ class Product(BaseModel):
     image: Optional[str] = None
     provider: Literal["XXL", "unkown"] = "unkown"
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "Sample Product",
                 "price": 19.99,
                 "description": "A great product description!",
             }
         }
+    )
