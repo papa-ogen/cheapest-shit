@@ -2,6 +2,8 @@ import requests
 from app.models.product import Product
 from bs4 import BeautifulSoup
 
+from app.models.provider import Provider
+from app.services.provider_service import ProviderService
 from app.utils.parse_int import parse_int
 
 class ProductService:
@@ -11,7 +13,7 @@ class ProductService:
 
     @staticmethod
     def get_all_products(query: str) -> list[Product]:
-        products = ProductService.scrape_xxl(query)
+        products = ProductService.scrape_for_products(query)
         return products
 
     @staticmethod
@@ -20,7 +22,7 @@ class ProductService:
         return products
 
     @staticmethod
-    def create_product(product_markup: BeautifulSoup) -> Product:
+    def create_product(product_markup: BeautifulSoup, provider_name) -> Product:
         brand_span = product_markup.find('span', {'data-testid': 'new-product-brand'})
         name_span = brand_span.find_next_sibling('span')
 
@@ -28,30 +30,27 @@ class ProductService:
             name=name_span.text,
             price=parse_int(product_markup.find('span', {'data-testid': 'current-price'}).text),
             brand=brand_span.text,
-            provider='xxl'
+            provider=provider_name
         )
         return product
     
     @staticmethod
-    def scrape_xxl(search_query: str) -> list[Product]:
-        # Provider
-        sort_by = 'PRICE_ASCENDING'
-        provider_host = 'https://www.xxl.se'
-        url = f'{provider_host}/search?query={search_query}&sort={sort_by}'
+    def scrape_for_products(search_query: str) -> list[Product]:
+        providers = ProviderService.get_all_providers()
 
-        response = requests.get(url, headers=ProductService.HEADERS)
+        for provider in providers:
+            response = requests.get(provider.get_url(search_query), headers=ProductService.HEADERS)
 
-        if response.status_code == 200:
-            html = BeautifulSoup(response.text, 'html.parser')
+            if response.status_code == 200:
+                html = BeautifulSoup(response.text, 'html.parser')
 
-            product_list = ProductService.get_product_list(html, 'div', {'data-testid': 'list-product'})
+                product_list = ProductService.get_product_list(html, 'div', {'data-testid': 'list-product'})
 
-            products: list[Product] = []
-            for product in product_list:
-                print(product)
-                products.append(ProductService.create_product(product))
+                products: list[Product] = []
+                for product in product_list:
+                    products.append(ProductService.create_product(product), provider.name)
 
-            return products
-                
-        else:
-            print("Failed to retrieve the page. Status code:", response.status_code)
+                return products
+                    
+            else:
+                print("Failed to retrieve the page. Status code:", response.status_code)
