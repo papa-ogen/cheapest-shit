@@ -1,6 +1,8 @@
-from typing import Literal, Optional
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
+
+from app.types import ProviderName
 
 
 class Product(BaseModel):
@@ -10,7 +12,7 @@ class Product(BaseModel):
     brand: Optional[str] = None
     url: Optional[str] = None
     image: Optional[str] = None
-    provider: Literal["XXL", "unkown"] = "unkown"
+    provider: ProviderName
 
     model_config = ConfigDict(
         json_schema_extra={

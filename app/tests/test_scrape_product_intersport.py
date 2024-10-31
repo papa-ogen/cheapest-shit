@@ -5,34 +5,31 @@ from app.models.provider import Provider
 from app.services.product_service import ProductService
 from app.utils.parse_int import parse_int
 
-from .__mocks__.product_test_data_xxl import product_test_data
+from .__mocks__.product_test_data_intersport import product_test_data
 
 
 def test_get_products() -> None:
     html = BeautifulSoup(product_test_data, "html.parser")
 
     provider = Provider(
-        name="XXL",
-        provider_host="https://www.xxl.se",
-        query="/search?query={search_query}",
-        params={"sort": "PRICE_ASCENDING"},
-        scrape_params={"data-testid": "list-product"},
+        name="Intersport",
+        provider_host="https://www.intersport.se/",
+        query="/katalog?q={search_query}",
+        params={"sort": "price%3Aascending"},
+        scrape_params={"data-sentry-component": "ProductCard"},
         product_scrape_params=lambda product_markup: {
-            "name": product_markup.find("span", {"data-testid": "new-product-brand"})
-            .find_next_sibling("span")
-            .text,
-            "price": product_markup.find("span", {"data-testid": "current-price"}).text,
-            "brand": product_markup.find(
-                "span", {"data-testid": "new-product-brand"}
+            "name": product_markup.find("a", {"class": "product-model"}).text,
+            "price": product_markup.find(
+                "span", {"data-sentry-component": "PriceTag"}
             ).text,
+            "brand": product_markup.find("a", {"class": "product-brand"}).text,
         },
     )
 
     product_list = ProductService.get_product_list(html, "div", provider.scrape_params)
-    assert len(product_list) == 36
+    assert len(product_list) == 33
 
     products: list[Product] = []
-
     for product in product_list:
         scrape_params = provider.product_scrape_params(product)
 
@@ -45,7 +42,7 @@ def test_get_products() -> None:
             )
         )
 
-    assert products[0].name == "Hockey Laces Waxed Laces 1 Pair 23/24"
-    assert products[0].price == 39.0
-    assert products[0].brand == "Mohawke"
-    assert products[0].provider == "XXL"
+    assert products[0].name == "Nylon 10x20 cm lagningslapp"
+    assert products[0].price == 59
+    assert products[0].brand == "Blue Line by Kleiber"
+    assert products[0].provider == "Intersport"

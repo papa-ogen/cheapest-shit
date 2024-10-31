@@ -1,5 +1,3 @@
-from typing import Literal
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -26,26 +24,10 @@ class ProductService:
         return products
 
     @staticmethod
-    def create_product(
-        product_markup: BeautifulSoup,
-        provider_name: Literal["XXL", "unkown"] = "unkown",
-    ) -> Product:
-        brand_span = product_markup.find("span", {"data-testid": "new-product-brand"})
-        name_span = brand_span.find_next_sibling("span")
-
-        product = Product(
-            name=name_span.text,
-            price=parse_int(
-                product_markup.find("span", {"data-testid": "current-price"}).text
-            ),
-            brand=brand_span.text,
-            provider=provider_name,
-        )
-        return product
-
-    @staticmethod
     def scrape_for_products(search_query: str) -> list[Product]:
         providers = ProviderService.get_all_providers()
+
+        products: list[Product] = []
 
         for provider in providers:
             response = requests.get(
@@ -56,16 +38,20 @@ class ProductService:
                 html = BeautifulSoup(response.text, "html.parser")
 
                 product_list = ProductService.get_product_list(
-                    html, "div", {"data-testid": "list-product"}
+                    html, "div", provider.scrape_params
                 )
 
-                products: list[Product] = []
                 for product in product_list:
-                    products.append(
-                        ProductService.create_product(product, provider.name)
-                    )
+                    scrape_params = provider.product_scrape_params(product)
 
-                return products
+                    products.append(
+                        Product(
+                            name=scrape_params["name"],
+                            price=parse_int(scrape_params["price"]),
+                            brand=scrape_params["brand"],
+                            provider=provider.name,
+                        )
+                    )
 
             else:
                 print(
@@ -73,4 +59,11 @@ class ProductService:
                     response.status_code,
                 )
 
-        return []
+        sorted_products = sorted(
+            products,
+            key=lambda product: (
+                product.price if product.price is not None else float("inf")
+            ),
+        )
+
+        return sorted_products
