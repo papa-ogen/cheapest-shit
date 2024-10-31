@@ -1,7 +1,10 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
+
 class Provider(BaseModel):
-    name: str
+    name: Literal["XXL", "unkown"]
     provider_host: str
     query: str
     params: dict[str, str] = {}
@@ -16,9 +19,6 @@ class Provider(BaseModel):
                 "provider_host": "https://www.xxl.se",
                 "query": "/search?query={search_query}",
                 "params": {"sort": "PRICE_ASCENDING"},
-                "get_url": "https://www.xxl.se/search?query=skridskor&sort=PRICE_ASCENDING"
+                "get_url": "https://www.xxl.se/search?query=skridskor&sort=PRICE_ASCENDING",
             }
         }
-
-
-

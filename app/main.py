@@ -1,7 +1,8 @@
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import search_routes
+
 from app.config import settings
+from app.routes import search_routes
 
 app = FastAPI(root_path=settings.ROOT_PATH)
 
@@ -23,6 +24,5 @@ app.add_middleware(
 def read_root() -> dict[str, str]:
     return {"app_name": settings.APP_NAME}
 
+
 app.include_router(search_routes.router)
-
-

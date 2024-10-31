@@ -36,3 +36,29 @@ update:
 
 test:
 	pytest
+
+.PHONY: format lint isort black mypy
+
+# Format code using isort and Black
+format: isort black
+	@echo "$(GREEN)Code formatted successfully with isort and Black.$(NC)"
+
+# Run isort to organize imports
+isort:
+	isort app
+
+# Run Black to format code
+black:
+	black app
+
+# Run linting with Flake8
+lint:
+	flake8 app
+
+# Run mypy for type checking
+mypy:
+	mypy app
+
+# Run all checks (lint, type check, format)
+check: lint mypy
+	@echo "$(GREEN)Linting, type-checking, and formatting completed.$(NC)"

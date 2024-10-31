@@ -15,5 +15,6 @@ exclude = '''
     | \.venv
     | build
     | dist
+    | __mocks__
 )/
 '''

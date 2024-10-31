@@ -1,5 +1,5 @@
-def parse_int(s: str) -> int:
-    num_str = ''
+def parse_int(s: str) -> int | None:
+    num_str = ""
     for char in s:
         if char.isdigit():  # Check if the character is a digit
             num_str += char  # Add it to the result string
