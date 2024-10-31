@@ -2,20 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 
 from app.models.product import Product
+from app.utils import parse_int
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
 }
-
-def parse_int(s: str) -> int:
-    num_str = ''
-    for char in s:
-        if char.isdigit():  # Check if the character is a digit
-            num_str += char  # Add it to the result string
-        else:
-            break  # Stop at the first invalid character
-    return int(num_str) if num_str else None  # Convert to int or return None if empty
-
 
 def get_product_list(product_markup: BeautifulSoup, tag: str, options: object) -> list[BeautifulSoup]:
     products = product_markup.find_all(tag, options)
