@@ -3,8 +3,8 @@ from app.services.scrape import scrape_xxl
 
 class ProductService:
     @staticmethod
-    def get_all_products() -> list[Product]:
-        products = scrape_xxl()
+    def get_all_products(query: str) -> list[Product]:
+        products = scrape_xxl(query)
         return products
 
     @staticmethod

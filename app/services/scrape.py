@@ -3,12 +3,6 @@ from bs4 import BeautifulSoup
 
 from app.models.product import Product
 
-
-# Provider
-sort_by = 'PRICE_ASCENDING'
-search_query = 'skridskor'
-provider_host = 'https://www.xxl.se'
-url = f'{provider_host}/search?query={search_query}&sort={sort_by}'
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
 }
@@ -35,10 +29,17 @@ def create_product(product_markup: BeautifulSoup) -> Product:
         name=name_span.text,
         price=parse_int(product_markup.find('span', {'data-testid': 'current-price'}).text),
         brand=brand_span.text,
+        provider='xxl'
     )
     return product
 
-def scrape_xxl() -> list[Product]:
+def scrape_xxl(search_query: str) -> list[Product]:
+    # Provider
+    sort_by = 'PRICE_ASCENDING'
+    provider_host = 'https://www.xxl.se'
+    url = f'{provider_host}/search?query={search_query}&sort={sort_by}'
+
+
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:

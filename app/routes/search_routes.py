@@ -9,7 +9,7 @@ def get_products(query: str = None) -> list[Product]:
     if not query:
         raise HTTPException(status_code=400, detail="Query parameter is required")
     
-    return ProductService.get_all_products()
+    return ProductService.get_all_products(query)
 
 
 # # Provider
