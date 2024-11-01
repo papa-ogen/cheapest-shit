@@ -28,6 +28,8 @@ class Provider(BaseModel):
                     "name": "product_markup.find('span', {'data-testid': 'new-product-brand'}).find_next_sibling('span').text",
                     "price": "product_markup.find('span', {'data-testid': 'current-price'}).text",
                     "brand": "product_markup.find('span', {'data-testid': 'new-product-brand'}).text",
+                    "image": "product_markup.find('img', {'data-nimg': 1})['src']",
+                    "url": "product_markup.find('a')['href']",
                 },
                 "get_url": "https://www.xxl.se/search?query=skridskor&sort=PRICE_ASCENDING",
             }

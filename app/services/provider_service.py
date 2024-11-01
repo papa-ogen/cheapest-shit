@@ -23,6 +23,8 @@ class ProviderService:
                     "brand": product_markup.find(
                         "span", {"data-testid": "new-product-brand"}
                     ).text,
+                    "image": product_markup.find("img", {"data-nimg": 1})["src"],
+                    "url": product_markup.find("a")["href"],
                 },
             ),
             Provider(
@@ -37,6 +39,12 @@ class ProviderService:
                         "span", {"data-sentry-component": "PriceTag"}
                     ).text,
                     "brand": product_markup.find("a", {"class": "product-brand"}).text,
+                    "image": product_markup.find(
+                        "img", {"data-sentry-element": "Image"}
+                    )["src"],
+                    "url": product_markup.find("a", {"class": "product-card__link"})[
+                        "href"
+                    ],
                 },
             ),
         ]

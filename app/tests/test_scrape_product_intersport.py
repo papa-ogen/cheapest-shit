@@ -1,9 +1,8 @@
 from bs4 import BeautifulSoup
 
 from app.models.product import Product
-from app.models.provider import Provider
 from app.services.product_service import ProductService
-from app.utils.parse_int import parse_int
+from app.services.provider_service import ProviderService
 
 from .__mocks__.product_test_data_intersport import product_test_data
 
@@ -11,38 +10,33 @@ from .__mocks__.product_test_data_intersport import product_test_data
 def test_get_products() -> None:
     html = BeautifulSoup(product_test_data, "html.parser")
 
-    provider = Provider(
-        name="Intersport",
-        provider_host="https://www.intersport.se/",
-        query="/katalog?q={search_query}",
-        params={"sort": "price%3Aascending"},
-        scrape_params={"data-sentry-component": "ProductCard"},
-        product_scrape_params=lambda product_markup: {
-            "name": product_markup.find("a", {"class": "product-model"}).text,
-            "price": product_markup.find(
-                "span", {"data-sentry-component": "PriceTag"}
-            ).text,
-            "brand": product_markup.find("a", {"class": "product-brand"}).text,
-        },
+    providers = ProviderService.get_all_providers()
+
+    intersport_provider = next(
+        (provider for provider in providers if provider.name == "Intersport"), None
     )
 
-    product_list = ProductService.get_product_list(html, "div", provider.scrape_params)
+    if intersport_provider is None:
+        raise ValueError("Provider not found")
+
+    product_list = ProductService.get_product_markup_list(
+        html, "div", intersport_provider.scrape_params
+    )
     assert len(product_list) == 33
 
-    products: list[Product] = []
-    for product in product_list:
-        scrape_params = provider.product_scrape_params(product)
-
-        products.append(
-            Product(
-                name=scrape_params["name"],
-                price=parse_int(scrape_params["price"]),
-                brand=scrape_params["brand"],
-                provider=provider.name,
-            )
-        )
+    products: list[Product] = ProductService.extract_products_from_markup(
+        product_markup_list=product_list, provider=intersport_provider
+    )
 
     assert products[0].name == "Nylon 10x20 cm lagningslapp"
     assert products[0].price == 59
     assert products[0].brand == "Blue Line by Kleiber"
     assert products[0].provider == "Intersport"
+    assert (
+        products[0].image
+        == "https://cdn.intersport.se/cdn-cgi/imagedelivery/wT8bUgvMzuJDRcaEDgl0aQ/prod/159175601000_10/w=1536,h=1536,quality=75,fit=pad,background=%23f8f9fa"
+    )
+    assert (
+        products[0].url
+        == "/utrustning/ovrigt/blue-line-by-kleiber-nylon-10x20-cm-lagningslapp/svart"
+    )

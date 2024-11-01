@@ -32,6 +32,8 @@ class ProductService:
                     price=parse_int(scrape_params["price"]),
                     brand=scrape_params["brand"],
                     provider=provider.name,
+                    image=scrape_params.get("image"),
+                    url=scrape_params.get("url"),
                 )
             )
         return products

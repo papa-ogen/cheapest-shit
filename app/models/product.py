@@ -20,6 +20,9 @@ class Product(BaseModel):
                 "name": "Sample Product",
                 "price": 19.99,
                 "description": "A great product description!",
+                "brand": "Sample Brand",
+                "url": "https://www.sample.com/product",
+                "image": "https://www.sample.com/product.jpg",
             }
         }
     )
