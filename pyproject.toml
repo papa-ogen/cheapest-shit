@@ -1,0 +1,20 @@
+[tool.isort]
+profile = "black"
+src_paths = ["app"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.tox
+    | \.venv
+    | build
+    | dist
+    | __mocks__
+)/
+'''

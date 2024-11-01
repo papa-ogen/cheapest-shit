@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from app.config import settings
+from app.routes import search_routes
+
+app = FastAPI(root_path=settings.ROOT_PATH)
+
 
 origins = [
     "http://localhost:3000",
@@ -15,8 +19,10 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-ROOT_PATH = "/api"
 
-@app.get(f"{ROOT_PATH}/")
+@app.get("/")
 def read_root() -> dict[str, str]:
-    return {"Hello": "World"}
+    return {"app_name": settings.APP_NAME}
+
+
+app.include_router(search_routes.router)

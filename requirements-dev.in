@@ -1,1 +1,8 @@
 mypy
+pytest
+pytest-asyncio
+httpx
+pre-commit
+black
+isort
+flake8

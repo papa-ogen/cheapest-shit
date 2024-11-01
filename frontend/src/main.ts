@@ -1,7 +1,9 @@
 import "./style.css";
 
 async function fetchData() {
-  const response = await fetch("http://localhost:8000/api");
+  const response = await fetch(
+    "http://localhost:8000/api/v1/search?query=hello"
+  );
   const data = await response.json();
   console.log(data);
 }
