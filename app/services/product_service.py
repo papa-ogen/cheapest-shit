@@ -68,6 +68,7 @@ class ProductService:
                     response.status_code,
                 )
 
+        # TODO: move to endpoint as query param
         sorted_products = sorted(
             products,
             key=lambda product: (
