@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from app.models.product import Product
+from app.models.provider import Provider
 from app.services.provider_service import ProviderService
 from app.utils.parse_int import parse_int
 
@@ -12,15 +13,27 @@ class ProductService:
     }
 
     @staticmethod
-    def get_all_products(query: str) -> list[Product]:
-        products = ProductService.scrape_for_products(query)
-        return products
-
-    @staticmethod
-    def get_product_list(
+    def get_product_markup_list(
         product_markup: BeautifulSoup, tag: str, options: object
     ) -> list[BeautifulSoup]:
         products: list[BeautifulSoup] = product_markup.find_all(tag, options)
+        return products
+
+    @staticmethod
+    def extract_products_from_markup(
+        product_markup_list: list[BeautifulSoup], provider: Provider
+    ) -> list[Product]:
+        products = []
+        for product_markup in product_markup_list:
+            scrape_params = provider.product_scrape_params(product_markup)
+            products.append(
+                Product(
+                    name=scrape_params["name"],
+                    price=parse_int(scrape_params["price"]),
+                    brand=scrape_params["brand"],
+                    provider=provider.name,
+                )
+            )
         return products
 
     @staticmethod
@@ -37,21 +50,15 @@ class ProductService:
             if response.status_code == 200:
                 html = BeautifulSoup(response.text, "html.parser")
 
-                product_list = ProductService.get_product_list(
+                # get products from markup
+                product_markup_list = ProductService.get_product_markup_list(
                     html, "div", provider.scrape_params
                 )
 
-                for product in product_list:
-                    scrape_params = provider.product_scrape_params(product)
-
-                    products.append(
-                        Product(
-                            name=scrape_params["name"],
-                            price=parse_int(scrape_params["price"]),
-                            brand=scrape_params["brand"],
-                            provider=provider.name,
-                        )
-                    )
+                # iterate over products and extract data
+                products += ProductService.extract_products_from_markup(
+                    product_markup_list, provider
+                )
 
             else:
                 print(
