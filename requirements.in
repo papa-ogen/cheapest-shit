@@ -6,3 +6,6 @@ pydantic
 tortoise-orm
 asyncpg
 aerich
+pgvector
+tortoise-vector
+numpy

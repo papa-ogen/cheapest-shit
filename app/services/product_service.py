@@ -1,5 +1,6 @@
 from sqlite3 import IntegrityError
 
+import numpy as np
 import requests
 from bs4 import BeautifulSoup
 
@@ -45,8 +46,17 @@ class ProductService:
                 product for product in products if product.url not in existing_urls
             ]
 
+            for product in new_products:
+                vector = ProductService.generate_product_vector(product)
+                product.vector = vector
+
+            for product in new_products:
+                if isinstance(product.vector, np.ndarray):
+                    product.vector = product.vector.tolist()
+
             if new_products:
                 print(f"Bulk create products {len(new_products)}")
+
                 await Product.bulk_create(new_products)
             else:
                 print("No new products to add.")
@@ -121,3 +131,19 @@ class ProductService:
         )
 
         return sorted_products
+
+    @staticmethod
+    def generate_product_vector(product: Product) -> np.ndarray:
+        """
+        Generates a vector representation of a product, typically using an embedding model.
+        Here, we are using a dummy implementation that returns a random vector.
+        Replace with actual embedding model (e.g., GPT, BERT, etc.).
+        """
+        # Example: generate a vector based on product name + description
+        text_input = f"{product.name} {product.description}"
+        print(f"Generating vector for product: {text_input}")
+
+        # Use GPT or any other embedding model to get the vector
+        # This is just a placeholder for illustration, use a proper embedding method.
+        vector = np.random.rand(1536)  # Replace with actual embedding model logic
+        return vector

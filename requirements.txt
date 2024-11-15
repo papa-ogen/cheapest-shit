@@ -13,7 +13,9 @@ annotated-types==0.7.0
 anyio==4.6.2.post1
     # via starlette
 asyncpg==0.30.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   tortoise-orm
 beautifulsoup4==4.12.3
     # via -r requirements.in
 certifi==2024.8.30
@@ -36,6 +38,12 @@ idna==3.10
     #   requests
 iso8601==2.1.0
     # via tortoise-orm
+numpy==2.1.3
+    # via
+    #   -r requirements.in
+    #   pgvector
+pgvector==0.3.6
+    # via -r requirements.in
 pydantic==2.9.2
     # via
     #   -r requirements.in
@@ -58,10 +66,13 @@ starlette==0.41.2
     # via fastapi
 tomlkit==0.13.2
     # via aerich
-tortoise-orm==0.21.7
+tortoise-orm[asyncpg]==0.21.7
     # via
     #   -r requirements.in
     #   aerich
+    #   tortoise-vector
+tortoise-vector==0.1.2
+    # via -r requirements.in
 typing-extensions==4.12.2
     # via
     #   aiosqlite

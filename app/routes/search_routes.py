@@ -15,7 +15,7 @@ async def get_products(query: str) -> ProductListResponse:
 
     products = await ProductService.init(query)
     product_response = [
-        ProductResponseModel.model_validate(product) for product in products
+        ProductResponseModel.from_orm_with_vector(product) for product in products
     ]
     return ProductListResponse(
         total_amount_of_products=len(products), products=product_response
