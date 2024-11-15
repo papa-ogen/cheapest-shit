@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 
 from app.models.product import Product
 from app.models.provider import Provider
+from app.services.openapi_service import OpenApiService
 from app.services.provider_service import ProviderService
 from app.utils.parse_int import parse_int
 
@@ -68,12 +69,10 @@ class ProductService:
                     response.status_code,
                 )
 
-        # TODO: move to endpoint as query param
-        sorted_products = sorted(
-            products,
-            key=lambda product: (
-                product.price if product.price is not None else float("inf")
-            ),
-        )
+        service = OpenApiService()
+        response = service.prompt_chatgpt("What is the best product for me?")
 
-        return sorted_products
+        if response:
+            print(response)
+
+        return products
