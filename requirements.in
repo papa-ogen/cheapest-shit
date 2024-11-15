@@ -9,3 +9,5 @@ aerich
 pgvector
 tortoise-vector
 numpy
+openai
+python-dotenv

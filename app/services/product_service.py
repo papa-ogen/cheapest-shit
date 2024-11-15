@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from app.models.product import Product
 from app.models.provider import Provider
 from app.models.query import Query
+from app.services.openapi_service import OpenApiService
 from app.services.provider_service import ProviderService
 from app.utils.parse_int import parse_int
 
@@ -47,7 +48,10 @@ class ProductService:
             ]
 
             for product in new_products:
-                vector = ProductService.generate_product_vector(product)
+                # product description is null, so we use the url instead
+                vector = ProductService.generate_product_vector(
+                    product.name, product.url
+                )
                 product.vector = vector
 
             for product in new_products:
@@ -133,17 +137,22 @@ class ProductService:
         return sorted_products
 
     @staticmethod
-    def generate_product_vector(product: Product) -> np.ndarray:
+    def generate_product_vector(name: str, description: str) -> np.ndarray:
         """
-        Generates a vector representation of a product, typically using an embedding model.
-        Here, we are using a dummy implementation that returns a random vector.
-        Replace with actual embedding model (e.g., GPT, BERT, etc.).
+        Generates a vector representation of a product, using an embedding model.
         """
-        # Example: generate a vector based on product name + description
-        text_input = f"{product.name} {product.description}"
-        print(f"Generating vector for product: {text_input}")
+        text_input = f"{name} {description}"
+        openapi_service = OpenApiService()
 
-        # Use GPT or any other embedding model to get the vector
-        # This is just a placeholder for illustration, use a proper embedding method.
-        vector = np.random.rand(1536)  # Replace with actual embedding model logic
-        return vector
+        try:
+            # Call the OpenAI embedding model
+            response = openapi_service.client.embeddings.create(
+                input=text_input,
+                model="text-embedding-ada-002",  # Replace with the correct embedding model name
+            )
+            # Extract the vector from the response
+            vector = response["data"][0]["embedding"]
+            return np.array(vector)
+        except Exception as e:
+            print(f"Error generating vector: {e}")
+            raise
