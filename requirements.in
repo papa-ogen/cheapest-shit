@@ -3,3 +3,6 @@ uvicorn
 beautifulsoup4
 requests
 pydantic
+tortoise-orm
+asyncpg
+aerich

@@ -6,7 +6,6 @@ from app.routes import search_routes
 
 app = FastAPI(root_path=settings.ROOT_PATH)
 
-
 origins = [
     "http://localhost:3000",
 ]

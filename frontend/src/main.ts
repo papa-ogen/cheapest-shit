@@ -1,12 +1,16 @@
 import "./style.css";
 
 async function fetchData() {
-  const response = await fetch("http://localhost:8000/api/v1/search?query=hello");
+  const response = await fetch(
+    "http://localhost:8000/api/v1/search/?query=frost"
+  );
   const data = await response.json();
   console.log(data);
 
   // Rendera produkterna inuti productGrid-diven
-  const productGridHTML = data.products.map(product => product_cart(product)).join('');
+  const productGridHTML = data.products
+    .map((product) => product_cart(product))
+    .join("");
 
   document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <main>

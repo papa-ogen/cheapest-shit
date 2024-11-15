@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from app.models.product import Product
 from app.services.product_service import ProductService
 from app.services.provider_service import ProviderService
+from app.types import ProviderName
 
 from .__mocks__.product_test_data_intersport import product_test_data
 
@@ -13,7 +14,12 @@ def test_get_products() -> None:
     providers = ProviderService.get_all_providers()
 
     intersport_provider = next(
-        (provider for provider in providers if provider.name == "Intersport"), None
+        (
+            provider
+            for provider in providers
+            if provider.name == ProviderName.INTERSPORT
+        ),
+        None,
     )
 
     if intersport_provider is None:
@@ -31,7 +37,7 @@ def test_get_products() -> None:
     assert products[0].name == "Nylon 10x20 cm lagningslapp"
     assert products[0].price == 59
     assert products[0].brand == "Blue Line by Kleiber"
-    assert products[0].provider == "Intersport"
+    assert products[0].provider == ProviderName.INTERSPORT
     assert (
         products[0].image
         == "https://cdn.intersport.se/cdn-cgi/imagedelivery/wT8bUgvMzuJDRcaEDgl0aQ/prod/159175601000_10/w=1536,h=1536,quality=75,fit=pad,background=%23f8f9fa"
