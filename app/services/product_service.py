@@ -127,12 +127,29 @@ class ProductService:
                     response.status_code,
                 )
 
-        # TODO: move to endpoint as query param
-        sorted_products = sorted(
-            products,
-            key=lambda product: (
-                product.price if product.price is not None else float("inf")
-            ),
-        )
+        return products
 
-        return sorted_products
+    @staticmethod
+    async def get_similar_products(vector: np.ndarray, limit: int = 5) -> list[Product]:
+        """
+        Fetches the top-k most similar products based on the provided vector.
+
+        Args:
+            vector (np.ndarray): The query vector.
+            top_k (int): The number of top results to retrieve.
+
+        Returns:
+            list[Product]: List of similar products.
+        """
+        # Convert the NumPy vector to a PostgreSQL-compatible format
+        vector_str = ",".join(map(str, vector.tolist()))
+
+        # Use pgvector's <-> operator to compute similarity
+        query = f"""
+            SELECT * FROM products
+            ORDER BY vector <-> '[{vector_str}]', price ASC
+            LIMIT {limit};
+            """
+
+        similar_products: list[Product] = await Product.raw(query)
+        return similar_products
