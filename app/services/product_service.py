@@ -48,9 +48,8 @@ class ProductService:
             ]
 
             for product in new_products:
-                # product description is null, so we use the url instead
                 vector = ProductService.generate_product_vector(
-                    product.name, product.url
+                    f"{product.name} {product.description} {product.url}"
                 )
                 product.vector = vector
 
@@ -137,21 +136,22 @@ class ProductService:
         return sorted_products
 
     @staticmethod
-    def generate_product_vector(name: str, description: str) -> np.ndarray:
+    def generate_product_vector(text_input: str) -> np.ndarray:
         """
         Generates a vector representation of a product, using an embedding model.
         """
-        text_input = f"{name} {description}"
         openapi_service = OpenApiService()
 
         try:
-            # Call the OpenAI embedding model
-            response = openapi_service.client.embeddings.create(
-                input=text_input,
-                model="text-embedding-ada-002",  # Replace with the correct embedding model name
+            vector = (
+                openapi_service.client.embeddings.create(
+                    input=[text_input],
+                    model="text-embedding-3-small",
+                )
+                .data[0]
+                .embedding
             )
             # Extract the vector from the response
-            vector = response["data"][0]["embedding"]
             return np.array(vector)
         except Exception as e:
             print(f"Error generating vector: {e}")
