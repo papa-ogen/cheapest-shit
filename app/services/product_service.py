@@ -47,8 +47,10 @@ class ProductService:
                 product for product in products if product.url not in existing_urls
             ]
 
+            openapi_service = OpenApiService()
+
             for product in new_products:
-                vector = ProductService.generate_product_vector(
+                vector = openapi_service.generate_product_vector(
                     f"{product.name} {product.description} {product.url}"
                 )
                 product.vector = vector
@@ -134,25 +136,3 @@ class ProductService:
         )
 
         return sorted_products
-
-    @staticmethod
-    def generate_product_vector(text_input: str) -> np.ndarray:
-        """
-        Generates a vector representation of a product, using an embedding model.
-        """
-        openapi_service = OpenApiService()
-
-        try:
-            vector = (
-                openapi_service.client.embeddings.create(
-                    input=[text_input],
-                    model="text-embedding-3-small",
-                )
-                .data[0]
-                .embedding
-            )
-            # Extract the vector from the response
-            return np.array(vector)
-        except Exception as e:
-            print(f"Error generating vector: {e}")
-            raise

@@ -1,3 +1,4 @@
+import numpy as np
 from openai import OpenAI
 
 from app.config import settings
@@ -10,30 +11,22 @@ class OpenApiService:
             project=settings.OPENAI_API_PROJECT_NAME,
         )
 
-    def prompt_chatgpt(self, prompt: str, model: str = "gpt-4o-mini") -> str | None:
+    def generate_product_vector(self, text_input: str) -> np.ndarray:
         """
-        Sends a message to OpenAI's ChatGPT and retrieves the response.
-
-        Args:
-            prompt (str): The message content to send to ChatGPT.
-            model (str): The model to use for the response, default is "gpt-4o-mini".
-
-        Returns:
-            str: The response from ChatGPT.
+        Generates a vector representation of a product, using an embedding model.
         """
+
         try:
-            response = self.client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-                model=model,
+            vector = (
+                self.client.embeddings.create(
+                    input=[text_input],
+                    model="text-embedding-3-small",
+                )
+                .data[0]
+                .embedding
             )
-
-            return response.choices[0].message["content"] if response.choices else None
-
+            # Extract the vector from the response
+            return np.array(vector)
         except Exception as e:
-            print(f"Failed to send prompt to OpenAI: {e}")
-            return None
+            print(f"Error generating vector: {e}")
+            raise
