@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/v1")
 def read_root() -> dict[str, str]:
     return {"app_name": settings.APP_NAME}
 

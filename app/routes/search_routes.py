@@ -8,7 +8,7 @@ from app.services.product_service import ProductService
 router = APIRouter(dependencies=[Depends(init_db)])
 
 
-@router.get("/search/", response_model=ProductListResponse)
+@router.get("/search/v1", response_model=ProductListResponse)
 async def get_products(query: str) -> ProductListResponse:
     if not query:
         raise HTTPException(status_code=400, detail="Query parameter is required")
@@ -20,3 +20,6 @@ async def get_products(query: str) -> ProductListResponse:
     return ProductListResponse(
         total_amount_of_products=len(products), products=product_response
     )
+
+
+# add a v2 route that fetch data form vector db
