@@ -6,7 +6,6 @@ from app.routes import search_routes
 
 app = FastAPI(root_path=settings.ROOT_PATH)
 
-
 origins = [
     "http://localhost:3000",
 ]
@@ -20,7 +19,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/v1")
 def read_root() -> dict[str, str]:
     return {"app_name": settings.APP_NAME}
 

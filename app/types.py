@@ -1,3 +1,7 @@
-from typing import Literal
+from enum import Enum
 
-ProviderName = Literal["XXL", "Intersport", "Unknown"]
+
+class ProviderName(Enum):
+    INTERSPORT = "Intersport"
+    XXL = "XXL"
+    UNKNOWN = "Unknown"

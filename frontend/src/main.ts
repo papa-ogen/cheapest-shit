@@ -1,12 +1,16 @@
 import "./style.css";
 
-async function fetchData() {
-  const response = await fetch("http://localhost:8000/api/v1/search?query=hello");
+async function fetchData(query: string = "skridskor") {
+  const response = await fetch(
+    `http://localhost:8000/api/v2/search/?query=${query}&limit=10`
+  );
   const data = await response.json();
   console.log(data);
 
   // Rendera produkterna inuti productGrid-diven
-  const productGridHTML = data.products.map(product => product_cart(product)).join('');
+  const productGridHTML = data.products
+    .map((product: any) => product_cart(product))
+    .join("");
 
   document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <main>
@@ -17,7 +21,7 @@ async function fetchData() {
   `;
 }
 
-function product_cart(product) {
+function product_cart(product: any) {
   return `
     <div class="productCard">
       <img src="${product.image}">
@@ -31,4 +35,4 @@ function product_cart(product) {
 }
 
 // Anropa fetchData för att hämta och visa produkterna
-fetchData();
+fetchData("skridskor");

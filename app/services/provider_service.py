@@ -1,4 +1,5 @@
 from app.models.provider import Provider
+from app.types import ProviderName
 
 
 class ProviderService:
@@ -6,7 +7,7 @@ class ProviderService:
     def get_all_providers() -> list[Provider]:
         providers = [
             Provider(
-                name="XXL",
+                name=ProviderName.XXL,
                 provider_host="https://www.xxl.se",
                 query="/search?query={search_query}",
                 params={"sort": "PRICE_ASCENDING"},
@@ -28,7 +29,7 @@ class ProviderService:
                 },
             ),
             Provider(
-                name="Intersport",
+                name=ProviderName.INTERSPORT,
                 provider_host="https://www.intersport.se",
                 query="/katalog?q={search_query}",
                 params={"sort": "price%3Aascending"},

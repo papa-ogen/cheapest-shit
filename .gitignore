@@ -3,3 +3,4 @@ __pychache__/
 *.pyo
 node_modules/
 .DS_Store
+.env
