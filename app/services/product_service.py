@@ -1,4 +1,5 @@
 from sqlite3 import IntegrityError
+from typing import Optional
 
 import numpy as np
 import requests
@@ -130,7 +131,9 @@ class ProductService:
         return products
 
     @staticmethod
-    async def get_similar_products(vector: np.ndarray, limit: int = 5) -> list[Product]:
+    async def get_similar_products(
+        vector: np.ndarray, limit: Optional[int] = None
+    ) -> list[Product]:
         """
         Fetches the top-k most similar products based on the provided vector.
 
@@ -148,8 +151,10 @@ class ProductService:
         query = f"""
             SELECT * FROM products
             ORDER BY vector <-> '[{vector_str}]', price ASC
-            LIMIT {limit};
             """
+
+        if limit is not None:
+            query += f" LIMIT {limit}"
 
         similar_products: list[Product] = await Product.raw(query)
         return similar_products

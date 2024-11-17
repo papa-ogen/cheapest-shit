@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.config import init_db
@@ -26,7 +28,7 @@ async def get_products1(query: str) -> ProductListResponse:
 
 # Only looks for existing products in the database
 @router.get("/v2/search", response_model=ProductListResponse)
-async def get_products2(query: str, limit: int = 10) -> ProductListResponse:
+async def get_products2(query: str, limit: Optional[int] = None) -> ProductListResponse:
     if not query:
         raise HTTPException(status_code=400, detail="Query is required")
 
